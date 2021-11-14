@@ -21,6 +21,12 @@ async function run() {
       const ordersCollection = database.collection("orders");
       const reviewCollection = database.collection("review");
 
+      app.get('/orders', async(req, res) =>{
+        const cursor = ordersCollection.find({});
+        const services = await cursor.toArray();
+        res.send(services); 
+      })
+
 
 
   // GET API 
@@ -50,7 +56,6 @@ app.post('/addServices', async(req, res)=>{
 });
 
 // get all service
-
 app.get("/allServices", async (req, res) => {
   const result = await servicesCollection.find({}).toArray();
   res.json(result);
@@ -65,45 +70,22 @@ app.get("/productsLimit", async (req, res) => {
 });
 
 // delete Order
-app.delete("/deleteOrder/:id", async (req, res) => {
-  const result = await ordersCollection.deleteOne({
-    _id: ObjectId(req.params.id),
-  });
+app.delete("/orders/:id", async (req, res) => {
+  const id = req.params.id;
+  // console.log(id);
+  const query = { _id: ObjectId(id) };
+  const result = await ordersCollection.deleteOne(query);
+  console.log(result);
   res.send(result);
 });
 
-// post orders
-app.post("/addOrders", async(req, res) =>{
-  const result = await ordersCollection.insertOne(req.body);
+app.post("/orders", async(req, res) =>{
+  const order = req.body
+  const result = await ordersCollection.insertOne(order);
   res.send(result)
 })
-// all order
-app.get("/allOrders", async (req, res) => {
-  const result = await ordersCollection.find({}).toArray();
-  res.json(result);
-});
-
-// Delete api
-
-app.delete('/orders/:id', async (req, res) => {
-  const id = req.params.id;
-  const query = { _id: ObjectId(id) };
-  const result = await ordersCollection.deleteOne(query);
-  console.log('deleting user with id ', result);
-  res.json(result);
-})
-// Delete api
-
-app.delete('/allOrders/:id', async (req, res) => {
-  const id = req.params.id;
-  const query = { _id: ObjectId(id) };
-  const result = await ordersCollection.deleteOne(query);
-  console.log('deleting user with id ', result);
-  res.json(result);
-})
-
 // my order
-app.get("/myOrder/:email", async (req, res) => {
+app.get("/orders/:email", async (req, res) => {
   console.log(req.params.email);
   const result = await ordersCollection
     .find({ email: req.params.email })
@@ -112,16 +94,24 @@ app.get("/myOrder/:email", async (req, res) => {
 });
 
 // add review
-app.post("/addReview", async(req, res)=>{
+app.post("/review", async(req, res)=>{
  const result = await reviewCollection.insertOne(req.body);
  res.send(result)
 });
 
-// get all review
-app.get("/allReview", async (req, res) => {
-  const result = await reviewCollection.find({}).toArray();
-  res.json(result);
+// add users
+app.post("/addUserInfo", async (req, res) => {
+  console.log("req.body");
+  const result = await usersCollection.insertOne(req.body);
+  res.send(result);
   console.log(result);
+});
+
+// get all review
+app.get("/review", async (req, res) => {
+  const cursor = reviewCollection.find({})
+  const result = await cursor.toArray()
+  res.json(result);
 });
 
 app.put("/statusUpdate/:id", async (req, res) => {
@@ -133,7 +123,6 @@ app.put("/statusUpdate/:id", async (req, res) => {
     },
   });
   res.send(result);
-  console.log(result);
 });
 
 app.put("/makeAdmin", async (req, res) => {
@@ -143,15 +132,12 @@ app.put("/makeAdmin", async (req, res) => {
     const documents = await usersCollection.updateOne(filter, {
       $set: { role: "admin" },
     });
-    console.log(result);
+    console.log(documents);
   }
 });
 // check admin
 app.get("/checkAdmin/:email", async (req, res) => {
-  const result = await usersCollection
-    .find({ email: req.params.email })
-    .toArray();
-  console.log(result);
+  const result = await usersCollection.find({ email: req.params.email }).toArray();
   res.send(result);
 });
 
