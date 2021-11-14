@@ -27,8 +27,6 @@ async function run() {
         res.send(services); 
       })
 
-
-
   // GET API 
   app.get('/services', async(req, res) =>{
     const cursor = servicesCollection.find({});
