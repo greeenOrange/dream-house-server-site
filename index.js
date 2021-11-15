@@ -49,7 +49,7 @@ app.post('/addServices', async(req, res)=>{
   console.log('Hit the post api', service);
   // create a document to insert
   const result = await servicesCollection.insertOne(service);
-  console.log(result);
+  // console.log(result);
   res.json('Post hitted')
 });
 
@@ -57,14 +57,14 @@ app.post('/addServices', async(req, res)=>{
 app.get("/allServices", async (req, res) => {
   const result = await servicesCollection.find({}).toArray();
   res.json(result);
-  console.log(result);
+  // console.log(result);
 });
 
 app.get("/productsLimit", async (req, res) => {
   const result = servicesCollection.find({}).limit(6);
   const products = await result.toArray();
   res.json(products);
-  console.log(products);
+  // console.log(products);
 });
 
 // delete Order
@@ -73,6 +73,16 @@ app.delete("/orders/:id", async (req, res) => {
   // console.log(id);
   const query = { _id: ObjectId(id) };
   const result = await ordersCollection.deleteOne(query);
+  console.log(result);
+  res.send(result);
+});
+
+// delete servieces
+app.delete("/services/:id", async (req, res) => {
+  const id = req.params.id;
+  // console.log(id);
+  const query = { _id: ObjectId(id) };
+  const result = await servicesCollection.deleteOne(query);
   console.log(result);
   res.send(result);
 });
